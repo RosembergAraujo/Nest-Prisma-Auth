@@ -7,36 +7,58 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(data: CreateUserDto) {
+  async create(createUserDto: CreateUserDto) {
     const userExists = await this.prismaService.user.findFirst({
       where: {
-        email: data.email,
+        email: createUserDto.email,
       },
     });
 
     if (userExists) throw new Error('This user already exists');
     return await this.prismaService.user.create({
-      data,
+      data: createUserDto,
     });
   }
 
   async findOne(id: string) {
     const userExists = await this.prismaService.user.findFirst({
       where: {
-        id: id,
+        id,
+      },
+    });
+
+    if (!userExists) throw new Error('This user not exists');
+    return userExists;
+  }
+
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const userExists = await this.prismaService.user.findFirst({
+      where: {
+        id,
       },
     });
 
     if (!userExists) throw new Error('This user not already exists');
-
-    return userExists;
+    return await this.prismaService.user.update({
+      where: {
+        id,
+      },
+      data: updateUserDto,
+    });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
+  async remove(id: string) {
+    const userExists = await this.prismaService.user.findFirst({
+      where: {
+        id,
+      },
+    });
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    if (!userExists) throw new Error('This user not exists');
+    return await this.prismaService.user.delete({
+      where: {
+        id,
+      },
+    });
   }
 }
