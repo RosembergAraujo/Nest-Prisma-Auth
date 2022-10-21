@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/database/PrismaService';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, CreateUserDtoResult } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/patch-user.dto';
 
 @Injectable()
@@ -15,9 +16,18 @@ export class UserService {
     });
 
     if (userExists) throw new Error('This user already exists');
-    return await this.prismaService.user.create({
-      data: createUserDto,
-    });
+
+    const data = {
+      ...createUserDto,
+      password: await bcrypt.hash(createUserDto.password, 10),
+    };
+
+    const userResult: CreateUserDtoResult =
+      await this.prismaService.user.create({
+        data,
+      });
+
+    return userResult;
   }
 
   async findOne(id: string) {
@@ -28,6 +38,7 @@ export class UserService {
     });
 
     if (!userExists) throw new Error('This user not exists');
+
     return userExists;
   }
 
@@ -39,6 +50,7 @@ export class UserService {
     });
 
     if (!userExists) throw new Error('This user not already exists');
+
     return await this.prismaService.user.update({
       where: {
         id,

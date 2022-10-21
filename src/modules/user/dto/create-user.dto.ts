@@ -7,7 +7,6 @@ import {
 } from 'class-validator';
 
 export class CreateUserDto {
-  @IsString()
   id?: string;
 
   @IsEmail()
@@ -20,4 +19,9 @@ export class CreateUserDto {
     message: 'password too weak',
   })
   password: string;
+}
+
+export class CreateUserDtoResult {
+  id?: string;
+  email: string;
 }
