@@ -29,7 +29,7 @@ export class UserService {
 
     return {
       ...userResult,
-      password: '',
+      password: undefined,
     };
   }
 
