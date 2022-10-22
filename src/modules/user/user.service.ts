@@ -27,7 +27,10 @@ export class UserService {
         data,
       });
 
-    return userResult;
+    return {
+      ...userResult,
+      password: '',
+    };
   }
 
   async findOne(id: string) {
@@ -70,6 +73,14 @@ export class UserService {
     return await this.prismaService.user.delete({
       where: {
         id,
+      },
+    });
+  }
+
+  async findByEmail(email: string) {
+    return await this.prismaService.user.findFirst({
+      where: {
+        email,
       },
     });
   }
